@@ -1,7 +1,7 @@
 package ds.stack;
 import java.util.EmptyStackException;
 
-public class ArrayStack<E> implements Stack<E> {
+public class ArrayStack<E> {
 
     // holds the stack elements
     private E[] S;
@@ -26,7 +26,7 @@ public class ArrayStack<E> implements Stack<E> {
     }
 
     // push element onto stack
-    @Override
+
     public void push(E o) {
         if (top == S.length - 1) {
             throw new IllegalStateException("Stack is full");
@@ -36,7 +36,7 @@ public class ArrayStack<E> implements Stack<E> {
     }
 
     // remove and return top element
-    @Override
+
     public E pop() {
         if (isEmpty()) {
             throw new EmptyStackException();
@@ -48,8 +48,14 @@ public class ArrayStack<E> implements Stack<E> {
     }
 
     // return top element without removing it
-    @Override
+
     public E peek() {
         if (isEmpty()) {
             throw new EmptyStackException();
         }
+        E temp = S[top];
+        // facilitate S[top] = null;
+        top = top - 1;
+        return temp;
+    }
+}
