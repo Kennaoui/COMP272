@@ -5,36 +5,36 @@ public class ParenMatcher {
 
     // Returns true iff all grouping symbols in X match correctly.
     // Tokens that are not grouping symbols are ignored.
-    public static boolean parenMatch(String[] X, int n) {
-        ArrayStack<Character> S = new ArrayStack<>(n); // worst case: all tokens are openings
+   public static boolean parenMatch(String[] X) {
+        int n = X.length;
+        ArrayStack<Character> S = new ArrayStack<>(n);
+        boolean valid = true;
+        int i = 0;
 
-        for (int i = 0; i < n; i++) {
-            if (X[i] == null || X[i].isEmpty()) continue;
-
-            char c = X[i].charAt(0);
-
-            if (isOpening(c)) {
-                S.push(c);
-            } else if (isClosing(c)) {
-                if (S.isEmpty()) {
-                    return false; // nothing to match with
+        while (i < n && valid) {
+            if (X[i] != null && !X[i].isEmpty()) {
+                char c = X[i].charAt(0);
+    
+                if (isOpening(c)) {
+                    S.push(c);
+                } 
+                else if (isClosing(c)) {
+                    if (S.isEmpty()) {
+                        valid = false; // nothing to match with
+                    } 
+                    else {
+                        char open = S.pop(); // safe now
+                        if (!matches(open, c)) {
+                            valid = false; // wrong type
+                        }
+                    }
                 }
-
-                char open;
-                try {
-                    open = S.pop();
-                } catch (EmptyStackException e) {
-                    return false; // defensive (shouldn't happen given isEmpty() check)
-                }
-
-                if (!matches(open, c)) {
-                    return false; // wrong type
-                }
+                // else: ignore non-grouping tokens
             }
-            // else: ignore non-grouping tokens (variables, operators, numbers, etc.)
+            i++;
         }
 
-        return S.isEmpty(); // true iff every opening symbol was matched
+        return valid && S.isEmpty();
     }
 
     private static boolean isOpening(char c) {
