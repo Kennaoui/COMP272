@@ -5,35 +5,29 @@ public class ParenMatcher {
 
     // Returns true iff all grouping symbols in X match correctly.
     // Tokens that are not grouping symbols are ignored.
-   public static boolean parenMatch(String[] X) {
-        int n = X.length;
+   public static boolean parenMatch(String expr) {
+        int n = expr.length()
         ArrayStack<Character> S = new ArrayStack<>(n);
         boolean valid = true;
         int i = 0;
-
-        while (i < n && valid) {
-            if (X[i] != null && !X[i].isEmpty()) {
-                char c = X[i].charAt(0);
+        char c;
     
-                if (isOpening(c)) {
-                    S.push(c);
+        while (i < n && valid) {
+            c = expr.charAt(i);
+    
+            if (isOpening(c)) {
+                S.push(c);
+            } 
+            else if (isClosing(c)) {
+                if (S.isEmpty()) {
+                    valid = false;           // nothing to match with
                 } 
-                else if (isClosing(c)) {
-                    if (S.isEmpty()) {
-                        valid = false; // nothing to match with
-                    } 
-                    else {
-                        char open = S.pop(); // safe now
-                        if (!matches(open, c)) {
-                            valid = false; // wrong type
-                        }
-                    }
+                else if (!matches(S.pop(), c)) {
+                    valid = false;           // wrong type
                 }
-                // else: ignore non-grouping tokens
             }
             i++;
         }
-
         return valid && S.isEmpty();
     }
 
