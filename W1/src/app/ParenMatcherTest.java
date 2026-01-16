@@ -22,3 +22,5 @@ public class ParenMatcherTest {
             boolean result = ParenMatcher.parenMatch(expr);
             System.out.println("Test " + (i + 1) + ": \"" + expr + "\" -> " + result);
         }
+    }
+}
