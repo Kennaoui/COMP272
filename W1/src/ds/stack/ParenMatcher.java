@@ -6,7 +6,7 @@ public class ParenMatcher {
     // Returns true iff all grouping symbols in X match correctly.
     // Tokens that are not grouping symbols are ignored.
    public static boolean parenMatch(String expr) {
-        int n = expr.length()
+        int n = expr.length();
         ArrayStack<Character> S = new ArrayStack<>(n);
         boolean valid = true;
         int i = 0;
