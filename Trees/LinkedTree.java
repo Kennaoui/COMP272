@@ -65,7 +65,7 @@ public class LinkedTree<T> implements Iterable<LinkedTree.Node<T>> {
     // ----- Constructor -----
   
     public LinkedTree() {
-        root = null;
+        this.root = null;
         size = 0;
     }
 
@@ -154,7 +154,7 @@ public class LinkedTree<T> implements Iterable<LinkedTree.Node<T>> {
     /** Returns true if p has no children. */
     public boolean isExternal(Node<T> p) {
         Node<T> node = validate(p);
-        return node.childrenInternal().isEmpty();
+        return node.getChildren().isEmpty();
     }
 
     /** Returns true if p is the root of this tree. */
