@@ -165,12 +165,6 @@ public class LinkedTree<T> implements Iterable<LinkedTree.Node<T>> {
 
     // ----- Iterators over nodes-----
 
-    /** Returns an iterable of the children of node p in order. (Accesor) */
-    public Iterable<Node<T>> getChildren(Node<T> p) {
-        Node<T> node = validate(p);
-        // return an unmodifiable view to protect representation
-        return node.);
-    }
   
     /** Returns an iterator over all nodes. (Generic)*/
     @Override
