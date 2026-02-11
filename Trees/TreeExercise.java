@@ -2,31 +2,40 @@ package javalucproject;
 
 import java.util.ArrayList;
 
-class TreeNode{
+class BinaryTreeNode{
     int data;
-    ArrayList<TreeNode> children = new ArrayList();
-    TreeNode parent = null;
+	BinaryTreeNode leftChild = null;
+	BinaryTreeNode rightChild = null;
+    BinaryTreeNode parent = null;
     
-    public TreeNode(int d){
+    public BinaryTreeNode(int d){
         data = d;
     }
     
-    public TreeNode addChild(int d){
-        TreeNode n = new TreeNode(d);
+    public BinaryTreeNode addChild(int d){
+        BinaryTreeNode n = new BinaryTreeNode(d);
         n.setParent(this);
-        children.add(n);
+		 if(leftChild != null && rightchild != null)
+			 return null;
+        if(leftChild == null)
+				leftChild = n;
+		else
+				rightChild = n;			
         return n;
     }
     
-    public ArrayList<TreeNode> getChildren(){
-        return children;
+    public BinaryTreeNode getLeftChild(){
+        return leftChild;
+    }
+	public BinaryTreeNode getRightChild(){
+        return rightChild;
     }
     
-    public void setParent(TreeNode p){
+    public void setParent(BinaryTreeNode p){
         parent = p;
     }
     
-    public TreeNode getParent(){
+    public BinaryTreeNode getParent(){
         return parent;
     }
 }
@@ -52,14 +61,21 @@ public class TreeExercise {
     
     //write a method to implement the preorder traversal 
     //pseudocode from the slides
-	public static void preOrderTraversal(TreeNode node){
+	public static void preOrderTraversal(BinaryTreeNode node){
 		if(node == null)
 			return;
 		System.out.print(node.data + " ");
-		ArrayList<TreeNode> children = node.getChildren();
-		for(TreeNode tn : children){
-			preOrderTraversal(tn);
-		}
+		
+		preOrderTraversal(node.getLeftChild)
+		preOrderTraversal(node.getRightChild)
+    }
+	public static void inOrderTraversal(BinaryTreeNode node){
+		if(node == null)
+			return;
+		
+		inOrderTraversal(node.getLeftChild)
+		System.out.print(node.data + " ");
+		inOrderTraversal(node.getRightChild)
     }
     //write a method implement the postorder traversal 
     //pseudocde from the slides
