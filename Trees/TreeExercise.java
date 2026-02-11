@@ -3,60 +3,110 @@ package javalucproject;
 import java.util.ArrayList;
 
 class BinaryTreeNode{
-    int data;
-	BinaryTreeNode leftChild = null;
-	BinaryTreeNode rightChild = null;
-    BinaryTreeNode parent = null;
-    
+    private int data;
+	private BinaryTreeNode leftChild = null;
+	private inaryTreeNode rightChild = null;
+    private BinaryTreeNode parent = null;
+
+
+	//Constructor
     public BinaryTreeNode(int d){
         data = d;
     }
-    
-    public BinaryTreeNode addChild(int d){
-        BinaryTreeNode n = new BinaryTreeNode(d);
-        n.setParent(this);
-		 if(leftChild != null && rightchild != null)
-			 return null;
-        if(leftChild == null)
-				leftChild = n;
-		else
-				rightChild = n;			
-        return n;
-    }
-    
-    public BinaryTreeNode getLeftChild(){
+
+
+	//Accessor behavior
+	public BinaryTreeNode getLeftChild(){
         return leftChild;
     }
+	
 	public BinaryTreeNode getRightChild(){
         return rightChild;
     }
-    
-    public void setParent(BinaryTreeNode p){
-        parent = p;
-    }
-    
-    public BinaryTreeNode getParent(){
+
+	public BinaryTreeNode getParent(){
         return parent;
     }
+
+	public int data(){
+        return data;
+    }
+
+	//Mutator behavior
+
+	//Setters
+	public void setParent(BinaryTreeNode p){
+        parent = p;
+    }
+
+	public void setData(int d){
+        data = d;
+    }
+	
+	//Private helper to create and attach a child to the node 
+	private BinaryTreeNode addPositionalChild(int d, boolean isleft){
+		BinaryTreeNode n = new BinaryTreeNode(d);
+		n.setParent(this);
+		
+		if(isleft)
+			leftChild = n;
+		else
+			rightChild = n;
+		
+		return n;
+	}
+	
+	//Add a left child if empty, otherwise returns null
+	public BinaryTreeNode addLeftChild(int d){
+		BinaryTreeNode n = null;
+		
+		if(leftChild == null){
+			n = addPositionalChild(d, true)
+		}
+		
+		return n;
+	}
+
+	//Add a right child if empty, otherwise returns null
+	public BinaryTreeNode addRightChild(int d){
+		BinaryTreeNode n = null;
+		
+		if(rightChild == null){
+			n = addPositionalChild(d, false)
+		}
+		
+		return n;
+	}
+
+	//Try to add left child, else right child, else returns null (This is a policy decision, not a property of all binary trees!!) 
+    public BinaryTreeNode addChild(int d){
+		
+		BinaryTreeNode n = addLeftChild(d);
+        if(n == null)
+				n = addRightChild(d);	
+        return n;
+    }
+    
 }
 
 
 public class TreeExercise {
     public static void main(String[] args){
         //create root node
-		TreeNode root = new TreeNode(1);
+		BinaryTreeNode root = new BinaryTreeNode(1);
         //add children to root node
-		TreeNode child1 = root.addChild(2);
-		TreeNode child2 = root.addChild(3);
+		BinaryTreeNode child1 = root.addChild(2);
+		BinaryTreeNode child2 = root.addChild(3);
         //add children to child nodes
-		TreeNode child11 = child1.addChild(4);
-		TreeNode child12 = child1.addChild(5);
+		BinaryTreeNode child11 = child1.addChild(4);
+		BinaryTreeNode child12 = child1.addChild(5);
 		
-		TreeNode child21 = child2.addChild(6);
-		TreeNode child22 = child2.addChild(7);
+		BinaryTreeNode child21 = child2.addChild(6);
+		BinaryTreeNode child22 = child2.addChild(7);
 		
         //call methods
 		preOrderTraversal(root);
+		inOrderTraversal(root);
     }
     
     //write a method to implement the preorder traversal 
@@ -64,24 +114,19 @@ public class TreeExercise {
 	public static void preOrderTraversal(BinaryTreeNode node){
 		if(node == null)
 			return;
-		System.out.print(node.data + " ");
-		
-		preOrderTraversal(node.getLeftChild)
-		preOrderTraversal(node.getRightChild)
+		System.out.print(node.data + " ");	
+		preOrderTraversal(node.getLeftChild());
+		preOrderTraversal(node.getRightChild());
     }
+	//write a method implement the inorder traversal 
 	public static void inOrderTraversal(BinaryTreeNode node){
 		if(node == null)
 			return;
 		
-		inOrderTraversal(node.getLeftChild)
+		inOrderTraversal(node.getLeftChild());
 		System.out.print(node.data + " ");
-		inOrderTraversal(node.getRightChild)
+		inOrderTraversal(node.getRightChild());
     }
-    //write a method implement the postorder traversal 
-    //pseudocde from the slides
-    
-    //write a method that given a node, finds the depth of that node
-    
-    //write a method that given the root node, finds the size of tree
-    //aka how many nodes the tree has
+	//write a method calculate the Hight of a given node
+
 }
