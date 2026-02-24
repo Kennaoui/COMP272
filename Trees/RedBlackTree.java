@@ -32,7 +32,7 @@ public class RedBlackTree {
             Node g = parentOf(p); // grand-parent
 
             // If parent is red and not root, grandparent must exist
-            if (g == null) break;   // <-- minimal fix: avoid infinite loop
+            if (g == null) break;  
 
             // If parent is on a left child
             if (p == leftOf(g)) {
