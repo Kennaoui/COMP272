@@ -23,10 +23,9 @@ public class RedBlackTree {
             fixAfterInsert(inserted);
     }
 
-    // -----------------------
-    // RB insertion fix (loop + helper)
-    // -----------------------
-
+    /*
+     * RB insertion fix (loop + helper)
+      */
     private void fixAfterInsert(Node x) {
         while (x != root && colorOf(parentOf(x)) == RED) {
             Node p = parentOf(x); // parent
@@ -135,14 +134,15 @@ public class RedBlackTree {
     // -----------------------
 
     private void redUncleColoringRepair(Node p, Node g, Node u) {
+        // Parent and Uncle are set to Black and Grandparent becomes RED.
         setColor(p, BLACK);
         setColor(u, BLACK);
         setColor(g, RED);
     }
 
-    // Minimal-but-correct for the "uncle BLACK + line" case:
-    // new subtree root becomes BLACK; old grandparent becomes RED.
+    
     private void blackUncleColoringRepair(Node newTop, Node oldG) {
+        // new subtree root becomes BLACK; old grandparent becomes RED.
         setColor(newTop, BLACK);
         setColor(oldG, RED);
     }
