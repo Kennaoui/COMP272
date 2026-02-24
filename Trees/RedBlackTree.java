@@ -143,11 +143,11 @@ public class RedBlackTree {
     // -----------------------
 
     private Node rotateLeft(Node x) {
-        return x;
+        return x; //Placeholder so code compiles
     }
 
     private Node rotateRight(Node x) {
-        return x;
+        return x; //Placeholder so code compiles
     }
 
     // -----------------------
