@@ -14,6 +14,8 @@ public class RedBlackTree {
             this.key = key;
             this.color = color;
             this.parent = parent;
+            this.left = null;
+            this.right = null;
         }
     }
 
@@ -34,76 +36,63 @@ public class RedBlackTree {
             // If parent is red and not root, grandparent must exist
             if (g == null) break;  
 
-            // If parent is on a left child
-            if (p == leftOf(g)) {
-                Node u = rightOf(g); // uncle
-                x = repairStepLeftSide(x, p, g, u);
+            //Compute Uncle of x
+            Node u = (p == leftOf(g)) ? rightOf(g) : leftOf(g);
+
+            
+            // Case 1: uncle is RED -> recolor and "bubble up" to g
+            if (colorOf(u) == RED) {
+                redUncleColoringRepair(p, g, u);
+                x = g; // continue fixing from grandparent
             }
-            // If parent is on a right child
+
+            
+            // Case 2: uncle is BLACK -> rotations + recolor
             else {
-                Node u = leftOf(g); // uncle
-                x = repairStepRightSide(x, p, g, u);
+                // Parent is a left child
+                if (p == leftOf(g)) {
+
+                    // Case 2B: triangle -> rotate parent left
+                    if (x == rightOf(p)) {
+                        rotateLeft(p);
+                        // after rotation, x and p shift
+                        x = leftOf(parentOf(x)); // keep x pointing at the former parent side
+                        p = parentOf(x);
+                    }
+
+                    // Case 2A: line -> rotate grandparent right
+                    rotateRight(g);
+                    // After rotation, former parent becomes top of that subtree
+                    Node newTop = parentOf(g);
+                    blackUncleColoringRepair(newTop, g);
+
+                    // Once we fix Case 2, we're done at this level
+                    break;
+                }
+                // Parent is a right child
+                else {
+
+                    // Case 2B: triangle -> rotate parent right
+                    if (x == leftOf(p)) {
+                        rotateRight(p);
+                        x = rightOf(parentOf(x));
+                        p = parentOf(x);
+                    }
+
+                    // Case 2A: line -> rotate grandparent left
+                    rotateLeft(g);
+                    Node newTop = parentOf(g);
+                    blackUncleColoringRepair(newTop, g);
+
+                    break;
+                }
             }
-        }
+                
+            
+            }
         setColor(root, BLACK);
     }
 
-    /**
-     * Parent p is LEFT child of grandparent g.
-     * Handles ONE repair step and returns the next x to continue from.
-     */
-    private Node repairStepLeftSide(Node x, Node p, Node g, Node u) {
-        // Case 1A: uncle is RED -> recolor and "bubble up" to g
-        if (colorOf(u) == RED) {
-            redUncleColoringRepair(p, g, u);
-            return g; // continue fixing from grandparent
-        }
-
-        // Uncle is BLACK:
-        // Case 2A: x is a right child (Triangle case) -> rotate p left
-        if (x == rightOf(p)) {
-            x = rotateLeft(p);
-        }
-
-        // Recompute parent after potential rotation
-        p = parentOf(x);
-        g = parentOf(p);
-
-        // Case 3A: Line case -> rotate g right, recolor
-        Node oldG = g;
-        x = rotateRight(oldG);
-        blackUncleColoringRepair(x, oldG);
-
-        return x;
-    }
-
-    /**
-     * Parent p is RIGHT child of grandparent g. (Mirror of left side.)
-     */
-    private Node repairStepRightSide(Node x, Node p, Node g, Node u) {
-        // Case 1B: uncle is RED -> recolor and "bubble up" to g
-        if (colorOf(u) == RED) {
-            redUncleColoringRepair(p, g, u);
-            return g;
-        }
-
-        // Uncle is BLACK:
-        // Case 2B: x is a left child (Triangle case) -> rotate p right
-        if (x == leftOf(p)) {
-            x = rotateRight(p);
-        }
-
-        // Recompute parent after potential rotation
-        p = parentOf(x);
-        g = parentOf(p);
-
-        // Case 3B: Line case -> rotate g left, recolor
-        Node oldG = g;
-        x = rotateLeft(oldG);
-        blackUncleColoringRepair(x, oldG);
-
-        return x;
-    }
 
     // -----------------------
     // BST insert
@@ -124,8 +113,10 @@ public class RedBlackTree {
         }
 
         Node n = new Node(key, RED, parent);
-        if (key < parent.key) parent.left = n;
-        else parent.right = n;
+        if (key < parent.key) 
+            parent.left = n;
+        else 
+            parent.right = n;
         return n;
     }
 
