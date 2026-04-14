@@ -1,31 +1,46 @@
-interface Graph { // Graph class ADT
-  // Initialize the graph with some number of vertices
-  void init(int n);
+interface Graph {   // Graph ADT
 
-  // Return the number of vertices
-  int nodeCount();
+    // ------------------------------------------------
+    // Vertices and edges (storing elements)
+    // ------------------------------------------------
 
-  // Return the current number of edges
-  int edgeCount();
+    void init(int n);          // initialize graph with n vertices
+    int vertexCount();         // number of vertices
+    int edgeCount();           // number of edges
 
-  // Get the value of node with index v
-  Object getValue(int v);
 
-  // Set the value of node with index v
-  void setValue(int v, Object val);
-  
-  // Adds a new edge from node v to node w with weight wgt
-  void addEdge(int v, int w, int wgt);
+    // ------------------------------------------------
+    // Accessor methods
+    // ------------------------------------------------
 
-  // Get the weight value for an edge
-  int weight(int v, int w);
+    int[] endVertices(int e);          // return the two end vertices of edge e
+    int opposite(int v, int e);        // return the vertex opposite v on edge e
+    boolean areAdjacent(int v, int w); // true if v and w are adjacent
 
-  // Removes the edge from the graph.
-  void removeEdge(int v, int w);
+    Object replace(int v, Object x);   // replace element at vertex v with x
+    Object replace(int e, Object x);   // replace element at edge e with x
 
-  // Returns true iff the graph has the edge
-  boolean hasEdge(int v, int w);
+    Object getVertexValue(int v);      // return element stored at vertex v
+    Object getEdgeValue(int e);        // return element stored at edge e
+    int weight(int v, int w);          // optional: return weight of edge (v, w)
 
-  // Returns an array containing the indicies of the neighbors of v
-  int[] neighbors(int v);
+
+    // ------------------------------------------------
+    // Update methods
+    // ------------------------------------------------
+
+    void addVertex(Object o);              // insert a vertex storing element o
+    void addEdge(int v, int w, Object o);  // insert edge (v, w) storing element o
+
+    void removeVertex(int v);              // remove vertex v and its incident edges
+    void removeEdge(int e);                // remove edge e
+
+
+    // ------------------------------------------------
+    // Iterable collection methods
+    // ------------------------------------------------
+
+    int[] incidentEdges(int v);   // all edges incident to v
+    int[] vertices();             // all vertices in the graph
+    int[] edges();                // all edges in the graph
 }
