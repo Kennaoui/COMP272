@@ -1,102 +1,240 @@
-public class GraphL implements Graph {
+public class GraphAdjList implements Graph {
 
-  private class Edge { // Doubly linked list node
-    int vertex, weight;
-    Edge prev, next;
+    private class Node {
+        int vertex;
+        int edgeID;
+        Node prev, next;
 
-    Edge(int v, int w, Edge p, Edge n) {
-      vertex = v;
-      weight = w;
-      prev = p;
-      next = n;
+        Node(int v, int e, Node p, Node n) {
+            vertex = v;
+            edgeID = e;
+            prev = p;
+            next = n;
+        }
     }
-  }
 
-  private Edge[] nodeArray;
-  private Object[] nodeValues;
-  private int numEdge;
+    private class Edge {
+        int u, v;
+        Object value;
 
-  // No real constructor needed
-  GraphL() {}
-
-  // Initialize the graph with n vertices
-  public void init(int n) {
-    nodeArray = new Edge[n];
-    // List headers;
-    for (int i=0; i<n; i++) { nodeArray[i] = new Edge(-1, -1, null, null); }
-    nodeValues = new Object[n];
-    numEdge = 0;
-  }
-
-  // Return the number of vertices
-  public int nodeCount() { return nodeArray.length; }
-
-  // Return the current number of edges
-  public int edgeCount() { return numEdge; }
-
-  // Get the value of node with index v
-  public Object getValue(int v) { return nodeValues[v]; }
-
-  // Set the value of node with index v
-  public void setValue(int v, Object val) { nodeValues[v] = val; }
-  
-  // Return the link in v's neighbor list that preceeds the
-  // one with w (or where it would be)
-  private Edge find (int v, int w) {
-    Edge curr = nodeArray[v];
-    while ((curr.next != null) && (curr.next.vertex < w)) {
-      curr = curr.next;
+        Edge(int u, int v, Object value) {
+            this.u = u;
+            this.v = v;
+            this.value = value;
+        }
     }
-    return curr;
-  }
 
-  // Adds a new edge from node v to node w with weight wgt
-  public void addEdge(int v, int w, int wgt) {
-    if (wgt == 0) { return; } // Can't store weight of 0
-    Edge curr = find(v, w);
-    if ((curr.next != null) && (curr.next.vertex == w)) {
-      curr.next.weight = wgt;
-    }
-    else {
-      curr.next = new Edge(w, wgt, curr, curr.next);
-      numEdge++;
-      if (curr.next.next != null) { curr.next.next.prev = curr.next; }
-    }
-  }
+    private Node[] nodeArray;
+    private Object[] nodeValues;
+    private Edge[] edgeArray;
+    private int numEdge;
 
-  // Get the weight value for an edge
-  public int weight(int v, int w) {
-    Edge curr = find(v, w);
-    if ((curr.next == null) || (curr.next.vertex != w)) { return 0; }
-    else { return curr.next.weight; }
-  }
+    GraphAdjList() {}
 
-  // Removes the edge from the graph.
-  public void removeEdge(int v, int w) {
-    Edge curr = find(v, w);
-    if ((curr.next == null) || curr.next.vertex != w) { return; }
-    else {
-      curr.next = curr.next.next;
-      if (curr.next != null) { curr.next.prev = curr; }
+    public void init(int n) {
+        nodeArray = new Node[n];
+        for (int i = 0; i < n; i++) {
+            nodeArray[i] = new Node(-1, -1, null, null); // header
+        }
+        nodeValues = new Object[n];
+        edgeArray = new Edge[0];
+        numEdge = 0;
     }
-    numEdge--;
-  }
 
-  // Returns true iff the graph has the edge
-  public boolean hasEdge(int v, int w) { return weight(v, w) != 0; }
+    public int vertexCount() {
+        return nodeArray.length;
+    }
 
-  // Returns an array containing the indicies of the neighbors of v
-  public int[] neighbors(int v) {
-    int cnt = 0;
-    Edge curr;
-    for (curr = nodeArray[v].next; curr != null; curr = curr.next) {
-      cnt++;
+    public int edgeCount() {
+        return numEdge;
     }
-    int[] temp = new int[cnt];
-    cnt = 0;
-    for (curr = nodeArray[v].next; curr != null; curr = curr.next) {
-      temp[cnt++] = curr.vertex;
+
+    public boolean areAdjacent(int v, int w) {
+        Node curr = nodeArray[v].next;
+        while (curr != null) {
+            if (curr.vertex == w) {
+                return true;
+            }
+            curr = curr.next;
+        }
+        return false;
     }
-    return temp;
-  }
+
+    public int insertVertex(Object o) {
+        int n = nodeArray.length;
+
+        Node[] newNodeArray = new Node[n + 1];
+        Object[] newNodeValues = new Object[n + 1];
+
+        for (int i = 0; i < n; i++) {
+            newNodeArray[i] = nodeArray[i];
+            newNodeValues[i] = nodeValues[i];
+        }
+
+        newNodeArray[n] = new Node(-1, -1, null, null);
+        newNodeValues[n] = o;
+
+        nodeArray = newNodeArray;
+        nodeValues = newNodeValues;
+
+        return n;
+    }
+
+    public int insertEdge(int v, int w, Object o) {
+        if (v == w) {
+            throw new IllegalArgumentException("No self-loops allowed.");
+        }
+        if (areAdjacent(v, w)) {
+            throw new IllegalArgumentException("No parallel edges allowed.");
+        }
+
+        int e = numEdge;
+
+        Edge[] newEdgeArray = new Edge[numEdge + 1];
+        for (int i = 0; i < numEdge; i++) {
+            newEdgeArray[i] = edgeArray[i];
+        }
+        newEdgeArray[numEdge] = new Edge(v, w, o);
+        edgeArray = newEdgeArray;
+
+        addToList(v, w, e);
+        addToList(w, v, e);
+
+        numEdge++;
+        return e;
+    }
+
+    public void removeVertex(int v) {
+        int[] inc = incidentEdges(v);
+
+        while (inc.length > 0) {
+            removeEdge(inc[0]);
+            inc = incidentEdges(v);
+        }
+
+        int n = nodeArray.length;
+
+        Node[] newNodeArray = new Node[n - 1];
+        Object[] newNodeValues = new Object[n - 1];
+
+        for (int i = 0; i < v; i++) {
+            newNodeArray[i] = nodeArray[i];
+            newNodeValues[i] = nodeValues[i];
+        }
+        for (int i = v + 1; i < n; i++) {
+            newNodeArray[i - 1] = nodeArray[i];
+            newNodeValues[i - 1] = nodeValues[i];
+        }
+
+        nodeArray = newNodeArray;
+        nodeValues = newNodeValues;
+
+        adjustVertexIndicesAfterRemoval(v);
+    }
+
+    public void removeEdge(int e) {
+        int u = edgeArray[e].u;
+        int v = edgeArray[e].v;
+
+        removeFromList(u, e);
+        removeFromList(v, e);
+
+        Edge[] newEdgeArray = new Edge[numEdge - 1];
+        for (int i = 0; i < e; i++) {
+            newEdgeArray[i] = edgeArray[i];
+        }
+        for (int i = e + 1; i < numEdge; i++) {
+            newEdgeArray[i - 1] = edgeArray[i];
+        }
+
+        edgeArray = newEdgeArray;
+        numEdge--;
+
+        adjustEdgeIndicesAfterRemoval(e);
+    }
+
+    public int[] incidentEdges(int v) {
+        int cnt = 0;
+        Node curr;
+
+        for (curr = nodeArray[v].next; curr != null; curr = curr.next) {
+            cnt++;
+        }
+
+        int[] temp = new int[cnt];
+        cnt = 0;
+        for (curr = nodeArray[v].next; curr != null; curr = curr.next) {
+            temp[cnt++] = curr.edgeID;
+        }
+
+        return temp;
+    }
+
+    private void addToList(int u, int v, int e) {
+        Node curr = nodeArray[u];
+        while (curr.next != null && curr.next.vertex < v) {
+            curr = curr.next;
+        }
+        curr.next = new Node(v, e, curr, curr.next);
+        if (curr.next.next != null) {
+            curr.next.next.prev = curr.next;
+        }
+    }
+
+    private void removeFromList(int u, int e) {
+        Node curr = nodeArray[u].next;
+        while (curr != null) {
+            if (curr.edgeID == e) {
+                curr.prev.next = curr.next;
+                if (curr.next != null) {
+                    curr.next.prev = curr.prev;
+                }
+                return;
+            }
+            curr = curr.next;
+        }
+    }
+
+    private void adjustEdgeIndicesAfterRemoval(int removedEdge) {
+        for (int i = 0; i < nodeArray.length; i++) {
+            Node curr = nodeArray[i].next;
+            while (curr != null) {
+                if (curr.edgeID > removedEdge) {
+                    curr.edgeID--;
+                }
+                curr = curr.next;
+            }
+        }
+    }
+
+    private void adjustVertexIndicesAfterRemoval(int removedVertex) {
+        for (int i = 0; i < nodeArray.length; i++) {
+            Node curr = nodeArray[i].next;
+            while (curr != null) {
+                if (curr.vertex > removedVertex) {
+                    curr.vertex--;
+                }
+                curr = curr.next;
+            }
+        }
+
+        for (int e = 0; e < numEdge; e++) {
+            if (edgeArray[e].u > removedVertex) {
+                edgeArray[e].u--;
+            }
+            if (edgeArray[e].v > removedVertex) {
+                edgeArray[e].v--;
+            }
+        }
+    }
+
+    // Not implemented (not needed for this slide)
+    public int[] endVertices(int e) { throw new UnsupportedOperationException(); }
+    public int opposite(int v, int e) { throw new UnsupportedOperationException(); }
+    public Object replaceVertex(int v, Object x) { throw new UnsupportedOperationException(); }
+    public Object replaceEdge(int e, Object x) { throw new UnsupportedOperationException(); }
+    public Object getVertexValue(int v) { throw new UnsupportedOperationException(); }
+    public Object getEdgeValue(int e) { throw new UnsupportedOperationException(); }
+    public int[] vertices() { throw new UnsupportedOperationException(); }
+    public int[] edges() { throw new UnsupportedOperationException(); }
 }
