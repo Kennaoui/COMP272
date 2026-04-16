@@ -20,7 +20,7 @@ class Edge {
     }
 }
 
-class GraphAdjList implements graph {
+class GraphAdjList{
     List<Vertex> vertices;
     List<Edge> edges; // optional, but often kept
 
